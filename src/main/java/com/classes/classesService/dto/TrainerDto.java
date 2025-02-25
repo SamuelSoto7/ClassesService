@@ -1,9 +1,11 @@
 package com.classes.classesService.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class TrainerDTO {
+@Getter
+@Setter
+public class TrainerDto {
     private Long id;
     private String name;
     private String specialty;

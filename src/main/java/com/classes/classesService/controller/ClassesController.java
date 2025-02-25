@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.classes.classesService.dto.ClassTrainerDto;
 import com.classes.classesService.model.Classes;
 import com.classes.classesService.service.ClassesService;
-import com.classes.classesService.dto.TrainerDTO;
 
 @RestController
 @RequestMapping("/api/classes")
@@ -26,12 +26,8 @@ public class ClassesController {
     }
 
     @GetMapping
-    public List<Classes> getAllClasses() {
+    public List<ClassTrainerDto> getAllClasses() {
         return classesService.getAllClasses();
     }
 
-     @GetMapping("/trainer/{trainerId}")
-    public TrainerDTO getTrainer(@PathVariable Long trainerId) {
-        return classesService.getTrainerDetails(trainerId);
-    }
 }
