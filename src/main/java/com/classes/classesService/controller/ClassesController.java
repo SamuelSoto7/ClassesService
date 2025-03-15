@@ -3,6 +3,7 @@ package com.classes.classesService.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,11 +22,13 @@ public class ClassesController {
     private ClassesService classesService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Classes scheduleClass(@RequestBody Classes classes) {
         return classesService.scheduleClass(classes);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
     public List<ClassTrainerDto> getAllClasses() {
         return classesService.getAllClasses();
     }
