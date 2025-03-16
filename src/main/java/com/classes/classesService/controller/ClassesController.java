@@ -15,6 +15,10 @@ import com.classes.classesService.dto.ClassTrainerDto;
 import com.classes.classesService.model.Classes;
 import com.classes.classesService.service.ClassesService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/classes")
 public class ClassesController {
@@ -23,12 +27,34 @@ public class ClassesController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+        summary = "Schedule a new class",
+        description = "This endpoint allows an ADMIN to schedule a new class. " +
+                      "The class details must be provided in the request body."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Class scheduled successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden, ADMIN role required"),
+        @ApiResponse(responseCode = "404", description = "Resource not found")
+    })
     public Classes scheduleClass(@RequestBody Classes classes) {
         return classesService.scheduleClass(classes);
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAINER')")
+    @Operation(
+        summary = "Get all classes",
+        description = "This endpoint retrieves a list of all classes. " +
+                      "It can be accessed by users with either the ADMIN or TRAINER role."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of classes retrieved successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden, ADMIN or TRAINER role required"),
+        @ApiResponse(responseCode = "404", description = "Resource not found")
+    })
     public List<ClassTrainerDto> getAllClasses() {
         return classesService.getAllClasses();
     }
