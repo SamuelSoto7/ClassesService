@@ -86,9 +86,6 @@ public class ClassesService {
     }
 
     public String getClassOccupancy(String classId) {
-        // Retorna la ocupación de la clase si existe, o un mensaje predeterminado
         return classOccupancyMap.getOrDefault(classId, "No data available");
-
-
     }
 }

@@ -3,11 +3,8 @@ package com.classes.classesService.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< HEAD
 import org.springframework.http.ResponseEntity;
-=======
 import org.springframework.security.access.prepost.PreAuthorize;
->>>>>>> 65bdfa40106bf4a9b8d379e21ac5eb0039ef1dd1
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,7 +70,8 @@ public class ClassesController {
     @GetMapping("/class-occupancy/{classId}")
     public ResponseEntity<String> getClassOccupancy(@PathVariable String classId) {
         String occupancy = classesService.getClassOccupancy(classId);
-        return ResponseEntity.ok(occupancy); // Puedes usar otros códigos de estado si es necesario
+        return ResponseEntity.ok(occupancy); 
     }
+
 
 }
