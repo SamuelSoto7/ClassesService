@@ -12,5 +12,6 @@ public class ClassTrainerDto {
     private String name;
     private LocalDateTime horary;
     private int maxCapacity;
+    private int currentOccupancy;
     private TrainerDto trainer;
 }

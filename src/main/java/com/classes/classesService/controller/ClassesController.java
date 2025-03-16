@@ -41,7 +41,10 @@ public class ClassesController {
         @ApiResponse(responseCode = "404", description = "Resource not found")
     })
     public Classes scheduleClass(@RequestBody Classes classes) {
-        return classesService.scheduleClass(classes);
+        Classes scheduledClass = classesService.scheduleClass(classes);
+        // Enviar un mensaje de ocupación inicial (0 ocupantes) al topic "ocupacion-clases"
+        classesService.sendOccupancyUpdate(classes.getId(), 0);  // Se inicia con 0 ocupantes
+        return scheduledClass;
     }
 
     @GetMapping
@@ -62,7 +65,7 @@ public class ClassesController {
     }
 
     @PostMapping("/update-occupancy")
-    public ResponseEntity<String> updateOccupancy(@RequestParam String classId, @RequestParam int currentOccupancy) {
+    public ResponseEntity<String> updateOccupancy(@RequestParam Long classId, @RequestParam int currentOccupancy) {
         classesService.sendOccupancyUpdate(classId, currentOccupancy);
         return ResponseEntity.ok("Occupancy update sent");
     }

@@ -60,6 +60,7 @@ public class ClassesService {
                 dto.setName(clase.getName());
                 dto.setHorary(clase.getHorary());
                 dto.setMaxCapacity(clase.getMaxCapacity());
+                dto.setCurrentOccupancy(clase.getCurrentOccupancy());
                 dto.setTrainer(trainerMap.get(clase.getTrainerId()));
                 return dto;
             })
@@ -71,10 +72,23 @@ public class ClassesService {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendOccupancyUpdate(String classId, int currentOccupancy) {
+    public void sendOccupancyUpdate(Long classId, int currentOccupancy) {
+        // Primero, actualizamos la ocupación de la clase en la base de datos.
+        Optional<Classes> claseOpt = classesRepository.findById(classId);
+        if (claseOpt.isPresent()) {
+            Classes clase = claseOpt.get();
+            clase.setCurrentOccupancy(currentOccupancy);  // Utilizamos setCurrentOccupancy para actualizar la ocupación
+            classesRepository.save(clase);  // Guardar la clase con la nueva ocupación
+        } else {
+            throw new RuntimeException("Clase no encontrada con ID: " + classId);
+        }
+    
+        // Luego, enviamos el mensaje al topic de Kafka.
         String message = "Class ID: " + classId + " - Occupancy: " + currentOccupancy;
         kafkaTemplate.send("ocupacion-clases", message);
     }
+    
+    
 
     @KafkaListener(topics = "ocupacion-clases", groupId = "my-consumer-group")
     public void listenToClassOccupancy(String message) {
