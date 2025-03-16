@@ -1,14 +1,18 @@
 package com.classes.classesService.service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,6 +29,8 @@ public class ClassesService {
     
     @Autowired
     private RestTemplate restTemplate;
+    
+    private Map<String, String> classOccupancyMap = new ConcurrentHashMap<>();
     
     @Value("${trainer.service.url}")
     private String trainerServiceUrl;
@@ -62,5 +68,27 @@ public class ClassesService {
         return classWithTrainerDtos;
     }
 
-   
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    public void sendOccupancyUpdate(String classId, int currentOccupancy) {
+        String message = "Class ID: " + classId + " - Occupancy: " + currentOccupancy;
+        kafkaTemplate.send("ocupacion-clases", message);
+    }
+
+    @KafkaListener(topics = "ocupacion-clases", groupId = "my-consumer-group")
+    public void listenToClassOccupancy(String message) {
+        System.out.println("Occupancy Update: " + message);
+        String classId = message.split(" - ")[0].split(": ")[1];
+        String occupancy = message.split(" - ")[1].split(": ")[1];
+        classOccupancyMap.put(classId, occupancy);
+
+    }
+
+    public String getClassOccupancy(String classId) {
+        // Retorna la ocupación de la clase si existe, o un mensaje predeterminado
+        return classOccupancyMap.getOrDefault(classId, "No data available");
+
+
+    }
 }
